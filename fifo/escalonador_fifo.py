@@ -60,3 +60,7 @@ class Escalonador_fifo:
             
             # Incrementa o tempo atual
             self.tempo_atual += 1
+
+    def executar(self):
+        self.simular_fifo_com_tabela()  
+        return self.processos_concluidos

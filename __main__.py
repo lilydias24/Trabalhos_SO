@@ -1,62 +1,66 @@
-from fifo.processo import Processo as ProcessoFIFO
 from fifo.escalonador_fifo import Escalonador_fifo
-from sjf.processo import Processo as ProcessoSJF
 from sjf.escalonador_sjf import Escalonador_sjf
-
-# Códigos ANSI para cores
-RESET = "\033[0m"
-VERDE = "\033[92m"
-VERMELHO = "\033[91m"
-AMARELO = "\033[93m"
-AZUL = "\033[94m"
-CINZA = "\033[90m"
-
-def escolher_escalonador():
-    print(f"\n{AZUL}Escolha o algoritmo de escalonamento:{RESET}")
-    print(f"{VERDE}1 - FIFO{RESET}")
-    print(f"{AMARELO}2 - SJF Preemptivo{RESET}")
-    print(f"{VERMELHO}3 - Sair{RESET}")
-    escolha = input(f"{CINZA}Digite o número da opção desejada: {RESET}")
-    return escolha.strip()
+from metricas import calcular_metricas
+from sjf.processo import Processo as ProcessoSJF
+from fifo.Processo import Processo as ProcessoFIFO
 
 
 def exibir_tabela(processos):
-    print(f"\n{AZUL}{'ID':<5}{'AT':<8}{'PT':<8}{'Início':<10}{'Fim':<8}{'WT':<8}{'TT':<8}{RESET}")
-    print("-" * 55)
+    print("\nID   AT      PT      Início    Fim     WT      TT")
+    print("------------------------------------------------------------")
     for p in processos:
-        wt = p.tempo_inicio - p.tempo_chegada
-        tt = p.tempo_fim - p.tempo_chegada
-        print(f"{VERDE}{p.id_processo:<5}{RESET}{p.tempo_chegada:<8}{p.tempo_execucao:<8}"
-              f"{p.tempo_inicio:<10}{p.tempo_fim:<8}{wt:<8}{tt:<8}")
-    print("-" * 55)
+        tat = p.tempo_fim - p.tempo_chegada           # Turnaround
+        wt = tat - p.tempo_execucao                      # Waiting
+        inicio = p.tempo_inicio if p.tempo_inicio is not None else "-"
+        print(f"{p.id_processo:<5}{p.tempo_chegada:<7}{p.tempo_execucao:<7}{inicio:<9}{p.tempo_fim:<8}{wt:<8}{tat:<8}")
+
+
+def escolher_escalonador():
+    print("\nEscolha o algoritmo de escalonamento:")
+    print("1 - FIFO")
+    print("2 - SJF (com preempção)")
+    opcao = input("Opção: ")
+    return opcao
 
 
 def main():
-    dados_processos = [
-        {"id": "P1", "at": 1, "pt": 14},
-        {"id": "P2", "at": 5, "pt": 5},
-        {"id": "P3", "at": 6, "pt": 12},
-        {"id": "P4", "at": 8, "pt": 7},
-        {"id": "P5", "at": 13, "pt": 6}
-    ]
+    opcao = escolher_escalonador()
 
-    while True:
-        escolha = escolher_escalonador()
-        if escolha == "1":
-            processos = [ProcessoFIFO(p['id'], p['at'], p['pt']) for p in dados_processos]
-            escalonador = Escalonador_fifo(processos)
-            concluidos = escalonador.simular_fifo_com_tabela()
-            exibir_tabela(concluidos)
-        elif escolha == "2":
-            processos = [ProcessoSJF(p['id'], p['at'], p['pt']) for p in dados_processos]
-            escalonador = Escalonador_sjf(processos)
-            concluidos = escalonador.simular_sjf_com_preempcao_com_tabela()
-            exibir_tabela(concluidos)
-        elif escolha == "3":
-            print(f"{VERMELHO}Finalizando o programa...{RESET}")
-            return
-        else:
-            print(f"{VERMELHO}Opção inválida.{RESET}")
+    if opcao == "1":
+        processos = [
+            ProcessoFIFO("P1", tempo_chegada=1, tempo_execucao=6),
+            ProcessoFIFO("P2", tempo_chegada=5, tempo_execucao=14),
+            ProcessoFIFO("P3", tempo_chegada=6, tempo_execucao=5),
+            ProcessoFIFO("P4", tempo_chegada=8, tempo_execucao=12),
+            ProcessoFIFO("P5", tempo_chegada=13, tempo_execucao=7),
+        ]
+        escalonador = Escalonador_fifo(processos)
+        concluidos = escalonador.executar()
+
+    elif opcao == "2":
+        processos = [
+            ProcessoSJF("P1", tempo_chegada=1, tempo_execucao=6),
+            ProcessoSJF("P2", tempo_chegada=5, tempo_execucao=14),
+            ProcessoSJF("P3", tempo_chegada=6, tempo_execucao=5),
+            ProcessoSJF("P4", tempo_chegada=8, tempo_execucao=12),
+            ProcessoSJF("P5", tempo_chegada=13, tempo_execucao=7),
+        ]
+        escalonador = Escalonador_sjf(processos)
+        concluidos = escalonador.executar()
+
+    else:
+        print("Opção inválida.")
+        return
+
+    if not concluidos:
+        print("Nenhum processo concluído foi retornado pelo escalonador.")
+        return
+
+    # Exibe a tabela final dos processos
+    exibir_tabela(concluidos)
+
+    # Calcula métricas (TAT, WT, RT e médias)
+    calcular_metricas(concluidos)
 
 
 if __name__ == "__main__":

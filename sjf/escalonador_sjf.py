@@ -64,3 +64,7 @@ class Escalonador_sjf:
 			))
 
 			self.tempo_atual += 1
+
+	def executar(self):
+		self.simular_sjf_com_preempcao_com_tabela()
+		return self.processos_concluidos
