@@ -15,6 +15,7 @@ class Cores:
     MAGENTA = '\033[35m'
     CIANO = '\033[36m'
     BRANCO = '\033[37m'
+    CINZA = '\033[90m'  
     
     # Cores de fundo
     FUNDO_PRETO = '\033[40m'
