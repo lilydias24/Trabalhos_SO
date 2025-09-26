@@ -2,7 +2,7 @@ from fifo.escalonador_fifo import Escalonador_fifo
 from sjf.escalonador_sjf import Escalonador_sjf
 from metricas import calcular_metricas
 from sjf.processo import Processo as ProcessoSJF
-from fifo.Processo import Processo as ProcessoFIFO
+from fifo.processo import Processo as ProcessoFIFO
 from cores import colorir, criar_titulo, criar_subtitulo, Cores
 import os
 
