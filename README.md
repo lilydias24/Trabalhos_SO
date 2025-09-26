@@ -1,127 +1,120 @@
-# T1_SO
-Trabalho I de Sistemas Operacionais
+# T1_SO - Trabalho I de Sistemas Operacionais
 
 ### Simulação de Gerenciamento de Processos
 
 Projeto desenvolvido como parte do Trabalho Prático I da disciplina de Sistemas Operacionais (UNIPAMPA, 2025/2).
 
-Este projeto implementa uma simulação de gerenciamento de processos em um sistema operacional, incluindo os algoritmos de escalonamento FIFO e SJF (Shortest Job First com preempção).
+Este projeto implementa uma simulação de gerenciamento de processos em um sistema operacional, incluindo os algoritmos de escalonamento **FIFO** e **SJF Preemptivo (Shortest Job First)**.
 
-### Integrantes
+## Integrantes
 
 - Emilly Nascimento Dias – 2410100671
 - Eric Santos de Moraes – 2410100672
 - Guilherme Rodrigues Vicente – 2410100717
 
-### Estrutura do Projeto
+## Estrutura do Projeto
+
 T1_SO/
-│── fifo/
-│   ├── processo.py
+├── fifo/
+│   ├── Processo.py
 │   └── escalonador_fifo.py
-│
-│── sjf/
+├── sjf/
 │   ├── processo.py
 │   └── escalonador_sjf.py
-│
-│── __main__.py
-│── README.md
+├── cores.py
+├── metricas.py
+├── __main__.py
+└── README.md
 
 
-- fifo/ → Implementação do algoritmo FIFO.
+## Descrição dos Módulos
 
-- sjf/ → Implementação do algoritmo SJF (com e sem preempção).
+- **fifo/**: Implementação do algoritmo FIFO (First In, First Out)
+- **sjf/**: Implementação do algoritmo SJF Preemptivo (Shortest Job First)
+- **cores.py**: Configurações de cores para exibição no terminal
+- **metricas.py**: Cálculo e exibição das métricas de desempenho
+- **__main__.py**: Arquivo principal que orquestra a simulação
 
-- main.py → Arquivo principal que executa as simulações e exibe os resultados.
+## Como Executar
 
-### Como Executar
+### Pré-requisitos
+- Python 3.6 ou superior
 
+### Execução
+```bash
+# navegue até o diretório do projeto
 cd T1_SO
 
-Acesse o repositório e execute o simulador com Python 3:
-
-cd T1_SO
+# Execute o simulador
 python __main__.py
 
-O programa exibirá os resultados para:
+```
 
-FIFO
-SJF Não-Preemptivo
-SJF Preemptivo (SRTF)
+# Opções disponíveis:
 
-### Processos Utilizados
+1 - FIFO (First In, First Out)
 
-Os processos definidos no enunciado foram:
+2 - SJF Preemptivo (Shortest Job First)
 
-| Processo | Arrival Time (AT) | Processing Time (PT) |
-| -------- | ----------------- | -------------------- |
-| P1       | 1                 | 14                   |
-| P2       | 5                 | 5                    |
-| P3       | 6                 | 12                   |
-| P4       | 8                 | 7                    |
-| P5       | 13                | 6                    |
+3 - Ambos os algoritmos (para comparação)
 
-### Métricas Calculadas
+A simulação é executada e exibida em formato de tabela em tempo real
+Ao final, são apresentadas as métricas de desempenho
 
+# Processos Utilizados
+Os processos definidos para a simulação são:
+
+Processo	Tempo de Chegada (AT)	Tempo de Execução (PT)
+P1	1	6
+P2	5	14
+P3	6	5
+P4	8	12
+P5	13	7
+
+# Algoritmos Implementados
+- FIFO (First In, First Out)
+Executa os processos na ordem de chegada
+Não possui preempção
+Simples de implementar, mas pode causar alto tempo de espera para processos curtos que chegam após processos longos
+- SJF Preemptivo (Shortest Job First)
+Sempre executa o processo com menor tempo de execução restante
+Possui preempção: se um processo com tempo menor chega, ele interrompe o processo em execução
+Minimiza o tempo médio de espera, mas aumenta o número de trocas de contexto
+
+# Métricas Calculadas
 Para cada algoritmo, o sistema calcula:
+Waiting Time (WT): Tempo que o processo aguardou na fila de prontos
+Turnaround Time (TT): Tempo total desde a chegada até a finalização (TT = WT + PT)
+Response Time (RT): Tempo desde a chegada até a primeira execução
+Médias: Valores médios de WT, TT e RT para todos os processos
 
-- Waiting Time (WT) → tempo de espera do processo na fila de prontos.
+# Exemplo de Saída
 
-- Turnaround Time (TT) → tempo total de execução (da chegada até a finalização).
+Tabela de Execução (exemplo parcial)
 
-- Médias de WT e TT para comparação entre algoritmos.
+Tempo  | Evento                      | Em Execução   | Fila de Prontos        | Tempo Restante
+----------------------------------------------------------------------------------------------------
+0      |                             | (Ocioso)      | []                     | 
+1      | Chegada P1 Início P1        | P1            | []                     | P1:5
+...
 
-### Algoritmos Implementados
--> FIFO (First In, First Out)
+Tabela de Resultados Finais
 
-- Ordem de execução baseada na chegada dos processos.
-- Simples e justo, mas pode causar o efeito comboio, onde processos curtos aguardam longos.
+ID    AT    PT    Início Fim     WT      TT
+-------------------------------------------
+P1    1     6     1       7      0       6
+P2    5     14    7       21     2       16
+...
 
--> SJF (Shortest Job First – Não Preemptivo)
+Métricas
 
-- Seleciona sempre o processo com menor tempo de execução dentre os prontos.
-- Uma vez iniciado, o processo executa até o fim.
+Proc   AT    PT    TAT     WT      RT
+-------------------------------------
+P1     1     6     6       0       0
+P2     5     14    16      2       2
+...
 
--> SJF (Shortest Remaining Time First – Preemptivo)
-
-- Seleciona o processo com menor tempo restante.
-- Pode interromper um processo em execução se outro com menor tempo chegar.
-- Reduz o tempo médio de espera, mas aumenta a quantidade de trocas de contexto.
-
-### Exemplo de Saída
-
-Ao executar o programa, o resultado gerado é semelhante ao seguinte:
-
-=== FIFO ===
-P1: WT=0,  TT=14
-P2: WT=10, TT=15
-P3: WT=23, TT=35
-P4: WT=41, TT=48
-P5: WT=48, TT=54
-Média WT=24.40, Média TT=33.20
-
-=== SJF (Não-Preemptivo) ===
-P1: WT=0,  TT=14
-P2: WT=9,  TT=14
-P3: WT=18, TT=30
-P4: WT=22, TT=29
-P5: WT=22, TT=28
-Média WT=14.20, Média TT=23.00
-
-=== SJF (Preemptivo) ===
-P1: WT=7,  TT=21
-P2: WT=0,  TT=5
-P3: WT=16, TT=28
-P4: WT=12, TT=19
-P5: WT=9,  TT=15
-Média WT=8.80, Média TT=17.60
-
-### Interpretação
-
-FIFO: processos curtos esperam muito tempo (ex.: P2 só inicia após P1).
-
-SJF Não-Preemptivo: melhora as médias, mas processos longos ainda impactam.
-
-SJF Preemptivo (SRTF): garante tempos médios menores, priorizando processos curtos.
+MÉDIAS         6.40    2.40    2.40
 
 ### Observações
 
