@@ -3,7 +3,7 @@ from sjf.escalonador_sjf import Escalonador_sjf
 from metricas import calcular_metricas
 from sjf.processo import Processo as ProcessoSJF
 from fifo.processo import Processo as ProcessoFIFO
-from cores import colorir, criar_titulo, criar_subtitulo, Cores
+from T2_SO.cores import colorir, criar_titulo, criar_subtitulo, Cores
 import os
 
 def limpar_tela():

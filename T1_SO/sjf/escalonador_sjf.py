@@ -1,16 +1,16 @@
 import collections
-from cores import colorir, Cores
+from T2_SO.cores import colorir, Cores
 
-class Escalonador_fifo:
+class Escalonador_sjf:
     def __init__(self, processos):
         self.todos_processos = sorted(processos, key=lambda p: p.tempo_chegada)
-        self.processos_disponiveis = collections.deque()
+        self.processos_disponiveis = []
         self.processo_em_execucao = None
         self.tempo_atual = 0
         self.processos_concluidos = []
 
-    def simular_fifo_com_tabela(self):
-        print(f"{Cores.VERDE} INICIANDO SIMULAÇÃO FIFO{Cores.RESET}\n")
+    def simular_sjf_com_preempcao_com_tabela(self):
+        print(f"{Cores.AZUL} INICIANDO SIMULAÇÃO SJF PREEMPTIVO{Cores.RESET}\n")
         
         cabecalho = f"{Cores.NEGRITO}{Cores.CIANO}{'Tempo':<6} | {'Evento':<25} | {'Em Execução':<15} | {'Fila de Prontos':<25} | {'Tempo Restante':<15}{Cores.RESET}"
         separador = f"{Cores.AMARELO}{'-'*100}{Cores.RESET}"
@@ -27,23 +27,30 @@ class Escalonador_fifo:
                 self.processos_disponiveis.append(processo)
                 evento += f"{Cores.VERDE}Chegada {processo.id_processo}{Cores.RESET} "
 
-            # 2. Se não houver processo em execução, pega um da fila
-            if self.processo_em_execucao is None and self.processos_disponiveis:
-                self.processo_em_execucao = self.processos_disponiveis.popleft()
-                self.processo_em_execucao.tempo_inicio = self.tempo_atual
-                evento += f"{Cores.AZUL}Início {self.processo_em_execucao.id_processo}{Cores.RESET} "
+            # 2. Ordena por tempo restante
+            self.processos_disponiveis.sort(key=lambda p: p.tempo_restante)
 
-            # 3. Executa o processo
+            # 3. Preempção
+            if self.processos_disponiveis:
+                if (self.processo_em_execucao is None or
+                    self.processos_disponiveis[0].tempo_restante < self.processo_em_execucao.tempo_restante):
+                    if self.processo_em_execucao:
+                        self.processos_disponiveis.append(self.processo_em_execucao)
+                        evento += f"{Cores.MAGENTA}Preempção {self.processo_em_execucao.id_processo}{Cores.RESET} "
+                    self.processo_em_execucao = self.processos_disponiveis.pop(0)
+                    if self.processo_em_execucao.tempo_inicio is None:
+                        self.processo_em_execucao.tempo_inicio = self.tempo_atual
+                    evento += f"{Cores.AZUL}Início {self.processo_em_execucao.id_processo}{Cores.RESET} "
+
+            # 4. Executa o processo
             if self.processo_em_execucao:
                 self.processo_em_execucao.tempo_restante -= 1
-
-                # 4. Verifica se o processo terminou
                 if self.processo_em_execucao.tempo_restante == 0:
                     self.processo_em_execucao.tempo_fim = self.tempo_atual + 1
                     evento += f"{Cores.VERMELHO}Fim {self.processo_em_execucao.id_processo}{Cores.RESET} "
                     self.processos_concluidos.append(self.processo_em_execucao)
                     self.processo_em_execucao = None
-            
+
             tempos_restantes_str = ", ".join(
                 [f"{colorir(p.id_processo, Cores.AMARELO)}:{colorir(str(p.tempo_restante), Cores.AMARELO)}" 
                  for p in self.processos_disponiveis] + 
@@ -60,12 +67,12 @@ class Escalonador_fifo:
                     f"[{fila_str}]" + " " * (24 - len(fila_str)) + "| " \
                     f"{tempos_restantes_str}"
             print(linha)
-            
+
             self.tempo_atual += 1
 
         print(separador)
-        print(f"{Cores.VERDE}✅ SIMULAÇÃO FIFO CONCLUÍDA{Cores.RESET}\n")
+        print(f"{Cores.AZUL}✅ SIMULAÇÃO SJF CONCLUÍDA{Cores.RESET}\n")
 
     def executar(self):
-        self.simular_fifo_com_tabela()  
+        self.simular_sjf_com_preempcao_com_tabela()
         return self.processos_concluidos

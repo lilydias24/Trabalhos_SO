@@ -14,6 +14,7 @@ Este projeto implementa uma simulação de gerenciamento de processos em um sist
 
 ## Estrutura do Projeto
 
+```
 T1_SO/
 ├── fifo/
 │   ├── Processo.py
@@ -25,7 +26,7 @@ T1_SO/
 ├── metricas.py
 ├── __main__.py
 └── README.md
-
+```
 
 ## Descrição dos Módulos
 

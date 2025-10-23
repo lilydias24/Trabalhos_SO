@@ -1,4 +1,4 @@
-from cores import colorir, criar_titulo, Cores
+from T2_SO.cores import colorir, criar_titulo, Cores
 
 def calcular_metricas(processos):
     soma_tat = soma_wt = soma_rt = 0
