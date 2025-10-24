@@ -1,5 +1,5 @@
 from paginacao.simulador_paginacao import SimuladorGerenciadorMemoria
-from cores import Cores, colorir, criar_titulo, criar_subtitulo, calcular_comprimento_visivel
+from cores import Cores, colorir, criar_titulo, criar_subtitulo
 import os
 
 def limpar_tela():
@@ -13,113 +13,70 @@ def exibir_cabecalho():
     print(titulo)
 
 def exibir_tabela_paginacao_completa(historico, page_faults_total, tam_memoria_fisica):
-    """Exibe a tabela de simulação passo a passo com ALINHAMENTO PERFEITO."""
+    """Exibe a tabela de simulação passo a passo."""
     
     print("\n" + criar_subtitulo("HISTÓRICO DE ACESSOS E GESTÃO DE MEMÓRIA", Cores.CIANO))
     
-    # === DEFINIÇÃO DAS LARGURAS VISÍVEIS DAS COLUNAS ===
-    LARGURA_TEMPO = 6
-    LARGURA_ENDERECO = 10
-    LARGURA_PAGINA_ALVO = 10
-    LARGURA_STATUS = 28
-    LARGURA_MOLDURA = 15
+    # Calcula largura máxima do status
+    largura_status = max(len(estado['status']) for estado in historico) + 3
+    largura_status = max(largura_status, 25)  # Mínimo de 25 caracteres
     
-    # 1. Cabeçalho (Usamos as larguras para o cabeçalho)
-    cabecalho = (
-        f"{Cores.NEGRITO}{Cores.AZUL}{'Tempo':<{LARGURA_TEMPO}} | {'Endereço':<{LARGURA_ENDERECO}} | {'Pág. Alvo':<{LARGURA_PAGINA_ALVO}} | "
-        f"{'Status':<{LARGURA_STATUS}} | {'Mold. Alocada':<{LARGURA_MOLDURA}} | {'Memória Física (Frames)':<{tam_memoria_fisica*5}}{Cores.RESET}"
-    )
-    separador = f"{Cores.AMARELO}{'-'*(LARGURA_TEMPO + LARGURA_ENDERECO + LARGURA_PAGINA_ALVO + LARGURA_STATUS + LARGURA_MOLDURA + 15 + tam_memoria_fisica*5)}{Cores.RESET}"
-    
-    print(cabecalho)
-    print(separador)
+    # Cabeçalho com largura ajustada
+    print(f"{Cores.NEGRITO}{Cores.AZUL}Tempo | Endereco | Pagina | {'Status':<{largura_status}} | Moldura | Memoria Fisica{Cores.RESET}")
+    print(f"{Cores.AMARELO}{'-' * (80 + largura_status - 20)}{Cores.RESET}")
     
     memoria_fisica_atual = [None] * tam_memoria_fisica
     
-    # 2. Corpo da Tabela
+    # Corpo da Tabela
     for estado in historico:
         pagina_alvo = estado['pagina_alvo']
         status_raw = estado['status']
         moldura_alocada = estado['moldura_encontrada']
         
-        # Atualização e Cores
+        # Atualiza memória física
         if moldura_alocada is not None and estado['page_fault']:
             memoria_fisica_atual[moldura_alocada] = pagina_alvo
         
-        status_cor = Cores.BRANCO
-        moldura_cor = Cores.BRANCO
+        # Cores baseadas no status
+        status_cor = Cores.VERDE if 'HIT' in status_raw else Cores.VERMELHO
         
-        if 'HIT' in status_raw:
-            status_cor = Cores.VERDE
-            moldura_cor = Cores.VERDE
-        elif 'FAULT' in status_raw:
-            status_cor = Cores.VERMELHO
-            moldura_cor = Cores.VERMELHO
-            
-        # Aplicar cores às strings
-        tempo_str = colorir(str(estado['tempo']), Cores.AZUL)
-        endereco_str = colorir(str(estado['endereco_acessado']), Cores.AMARELO)
-        pagina_alvo_str = colorir(f'P{pagina_alvo}', Cores.BRANCO)
-        status_str = colorir(status_raw, status_cor)
-        moldura_str = colorir(str(moldura_alocada), moldura_cor)
-        
-        # Cálculo do Padding para alinhar a tabela
-        padding_tempo = " " * (LARGURA_TEMPO - calcular_comprimento_visivel(tempo_str))
-        padding_endereco = " " * (LARGURA_ENDERECO - calcular_comprimento_visivel(endereco_str))
-        padding_pagina_alvo = " " * (LARGURA_PAGINA_ALVO - calcular_comprimento_visivel(pagina_alvo_str))
-        padding_status = " " * (LARGURA_STATUS - calcular_comprimento_visivel(status_str))
-        padding_moldura = " " * (LARGURA_MOLDURA - calcular_comprimento_visivel(moldura_str))
-        
-        # Formata a Memória Física
+        # Formata memória física
         frames_str = " | ".join([
-            colorir(f"P{p}", Cores.BRANCO) if p is not None else colorir(" - ", Cores.CINZA) 
+            f"P{p}" if p is not None else " - " 
             for p in memoria_fisica_atual
         ])
         
-        # 4. Montagem da Linha (Concatenando string + padding)
-        linha = (
-            f"{tempo_str}{padding_tempo} | "
-            f"{endereco_str}{padding_endereco} | "
-            f"{pagina_alvo_str}{padding_pagina_alvo} | "
-            f"{status_str}{padding_status} | "
-            f"{moldura_str}{padding_moldura} | "
-            f"{frames_str}"
-        )
-        print(linha)
+        # Linha com largura ajustada para status
+        status_formatado = colorir(status_raw, status_cor)
+        print(f"{estado['tempo']:5} | {estado['endereco_acessado']:8} | P{pagina_alvo:4} | {status_formatado:<{largura_status}} | {moldura_alocada:7} | {frames_str}")
         
-    print(separador)
+    print(f"{Cores.AMARELO}{'-' * (80 + largura_status - 20)}{Cores.RESET}")
     
-    # 3. Resultado Final
-    print(f"\n{Cores.MAGENTA}[OK] SIMULACAO CONCLUIDA{Cores.RESET}")
-    print(f"{Cores.MAGENTA}Total de Falhas de Pagina (Page Faults): {Cores.NEGRITO}{colorir(page_faults_total, Cores.VERMELHO if page_faults_total > 5 else Cores.VERDE)}{Cores.RESET}\n")
+    # Resultado final
+    print(f"\n{Cores.MAGENTA}[OK] SIMULAÇÃO CONCLUÍDA{Cores.RESET}")
+    print(f"{Cores.MAGENTA}Total de Page Faults: {page_faults_total}{Cores.RESET}\n")
 
 def executar_paginacao_fifo():
-    
-    # PARÂMETROS DE ENTRADA FIXOS
+    # Configurações
     TAM_PAGINA = 100
-    TAM_MEMORIA_FISICA_FRAMES = 3 # 3 Molduras
-    TAM_MEMORIA_VIRTUAL_PAGINAS = 10 
+    TAM_MEMORIA_FISICA = 3
+    TAM_MEMORIA_VIRTUAL = 10
+    lista_acessos = [100, 250, 450, 600, 100, 800, 250, 450, 100, 250, 950]
     
-    # Lista de acessos a ENDEREÇOS VIRTUAIS
-    lista_acessos = [100, 250, 450, 600, 100, 800, 250, 450, 100, 250, 950] 
-    
-    print(criar_subtitulo(f"Configuracao: {TAM_MEMORIA_FISICA_FRAMES} Molduras (Frames), Paginas={TAM_PAGINA} Bytes. Algoritmo: FIFO.", Cores.AMARELO))
+    print(criar_subtitulo(f"Configuracao: {TAM_MEMORIA_FISICA} Molduras, Paginas={TAM_PAGINA} Bytes, Algoritmo: FIFO", Cores.AMARELO))
 
-    simulador = SimuladorGerenciadorMemoria(
-        tam_memoria_fisica=TAM_MEMORIA_FISICA_FRAMES,
-        tam_memoria_virtual=TAM_MEMORIA_VIRTUAL_PAGINAS,
-        tam_pagina=TAM_PAGINA
-    )
-    
+    # Cria e executa simulador
+    simulador = SimuladorGerenciadorMemoria(TAM_MEMORIA_FISICA, TAM_MEMORIA_VIRTUAL, TAM_PAGINA)
     historico, page_faults_total, tabela_final = simulador.simular(lista_acessos)
     
-    exibir_tabela_paginacao_completa(historico, page_faults_total, TAM_MEMORIA_FISICA_FRAMES)
+    # Exibe resultados
+    exibir_tabela_paginacao_completa(historico, page_faults_total, TAM_MEMORIA_FISICA)
     
-    # Exibir o estado final da Tabela de Paginas
-    print(criar_subtitulo("ESTADO FINAL DA TABELA DE PAGINAS (Resumo):", Cores.CINZA))
+    # Estado final da tabela de páginas
+    print(criar_subtitulo("ESTADO FINAL DA TABELA DE PAGINAS:", Cores.CINZA))
     for p, entry in tabela_final.items():
         if entry.presente:
-            print(f"  {colorir(f'P{p}', Cores.BRANCO)} -> Moldura {colorir(str(entry.moldura), Cores.AZUL)} (Presente)")
+            print(f"  P{p} -> Moldura {entry.moldura}")
     print()
 
 
