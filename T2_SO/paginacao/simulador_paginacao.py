@@ -86,6 +86,7 @@ class SimuladorGerenciadorMemoria:
                 
                 # Limpa a entrada na Tabela de Páginas da página removida
                 self.tabela_paginas[pagina_remover].presente = False
+                self.tabela_paginas[pagina_remover].moldura = None
                 
                 evento_simulacao['status'] += f' (FIFO Remove P{pagina_remover})'
                 evento_simulacao['pagina_removida'] = pagina_remover

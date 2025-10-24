@@ -35,7 +35,7 @@ def criar_titulo(texto, cor=Cores.CIANO):
     return f"{cor}{linha}\n  {texto}\n{linha}{Cores.RESET}"
 
 def criar_subtitulo(texto, cor=Cores.AMARELO):
-    return f"{cor}➤ {texto}{Cores.RESET}"
+    return f"{cor}-> {texto}{Cores.RESET}"
 
 def calcular_comprimento_visivel(texto_colorido):
     """

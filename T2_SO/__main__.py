@@ -90,8 +90,8 @@ def exibir_tabela_paginacao_completa(historico, page_faults_total, tam_memoria_f
     print(separador)
     
     # 3. Resultado Final
-    print(f"\n{Cores.MAGENTA}✅ SIMULAÇÃO CONCLUÍDA{Cores.RESET}")
-    print(f"{Cores.MAGENTA}Total de Falhas de Página (Page Faults): {Cores.NEGRITO}{colorir(page_faults_total, Cores.VERMELHO if page_faults_total > 5 else Cores.VERDE)}{Cores.RESET}\n")
+    print(f"\n{Cores.MAGENTA}[OK] SIMULACAO CONCLUIDA{Cores.RESET}")
+    print(f"{Cores.MAGENTA}Total de Falhas de Pagina (Page Faults): {Cores.NEGRITO}{colorir(page_faults_total, Cores.VERMELHO if page_faults_total > 5 else Cores.VERDE)}{Cores.RESET}\n")
 
 def executar_paginacao_fifo():
     
@@ -103,7 +103,7 @@ def executar_paginacao_fifo():
     # Lista de acessos a ENDEREÇOS VIRTUAIS
     lista_acessos = [100, 250, 450, 600, 100, 800, 250, 450, 100, 250, 950] 
     
-    print(criar_subtitulo(f"Configuração: {TAM_MEMORIA_FISICA_FRAMES} Molduras (Frames), Páginas={TAM_PAGINA} Bytes. Algoritmo: FIFO.", Cores.AMARELO))
+    print(criar_subtitulo(f"Configuracao: {TAM_MEMORIA_FISICA_FRAMES} Molduras (Frames), Paginas={TAM_PAGINA} Bytes. Algoritmo: FIFO.", Cores.AMARELO))
 
     simulador = SimuladorGerenciadorMemoria(
         tam_memoria_fisica=TAM_MEMORIA_FISICA_FRAMES,
@@ -115,8 +115,8 @@ def executar_paginacao_fifo():
     
     exibir_tabela_paginacao_completa(historico, page_faults_total, TAM_MEMORIA_FISICA_FRAMES)
     
-    # Exibir o estado final da Tabela de Páginas
-    print(criar_subtitulo("ESTADO FINAL DA TABELA DE PÁGINAS (Resumo):", Cores.CINZA))
+    # Exibir o estado final da Tabela de Paginas
+    print(criar_subtitulo("ESTADO FINAL DA TABELA DE PAGINAS (Resumo):", Cores.CINZA))
     for p, entry in tabela_final.items():
         if entry.presente:
             print(f"  {colorir(f'P{p}', Cores.BRANCO)} -> Moldura {colorir(str(entry.moldura), Cores.AZUL)} (Presente)")
