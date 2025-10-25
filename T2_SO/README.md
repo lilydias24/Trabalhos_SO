@@ -24,11 +24,11 @@ Demonstrar como funciona o gerenciamento de memória com paginação, incluindo:
 ```
 T2_SO/
 ├── paginacao/
-│   └── simulador_paginacao.py    # Lógica principal da simulação
+│   └── simulador_paginacao.py     # Lógica principal da simulação
 ├── cores.py                       # Configurações de cores para terminal
-├── __main__.py                    # Arquivo principal e interface
-├── README.md                      # Documentação do projeto
-└── 09_SO_ES_TP2_Simulação do Gerenciamento de Memória.pdf  # Enunciado
+├── __main__.py                    # Arquivo principal que chama o simulador e tabela
+├── README.md                      # Documentação do projeto 
+└── utils.py                       # crição da tabela de demonstração
 ```
 
 ## Descrição dos Módulos
@@ -37,7 +37,8 @@ T2_SO/
 |--------|-----------|------------------|
 | **`simulador_paginacao.py`** | Classe principal `SimuladorGerenciadorMemoria` | Implementa o algoritmo FIFO, gerencia tabela de páginas e memória física |
 | **`cores.py`** | Utilitários de formatação visual | Fornece cores e formatação para interface do terminal |
-| **`__main__.py`** | Interface principal | Orquestra a simulação e exibe resultados formatados |
+| **`__main__.py`** | Chamada dos métodos | Orquestra a simulação e chama a tabela da utils |
+| **`utils.py`** | Interface principal | criando a tabela de páginas |
 
 ## Como Executar
 
