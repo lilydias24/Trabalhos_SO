@@ -1,9 +1,7 @@
-# main.py
-
 from paginacao.simulador_paginacao import SimuladorGerenciadorMemoria
 from cores import Cores, criar_titulo, criar_subtitulo
 from utils import exibir_tabela_paginacao_completa
-from input_utils import coletar_dados_simulacao # Importação para a nova funcionalidade
+from input_utils import coletar_dados_simulacao
 import os
 
 def limpar_tela():

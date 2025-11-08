@@ -1,6 +1,7 @@
 from collections import deque
 from typing import List, Dict, Any, Optional
 
+# Representa uma entrada na Tabela de Páginas.
 class PageTableEntry:
     """Representa uma entrada na Tabela de Páginas."""
     def __init__(self):
