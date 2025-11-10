@@ -30,6 +30,7 @@ class SimuladorGerenciadorMemoria:
         self.total_page_faults = 0
         self.historico_simulacao: List[Dict[str, Any]] = []
         self.tempo_atual = 0
+        
 
     def traduzir_endereco_virtual(self, endereco_virtual: int) -> int:
         """Calcula o número da página virtual a partir do endereço virtual."""
