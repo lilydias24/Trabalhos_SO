@@ -1,0 +1,8 @@
+{
+    "limite_tempo_processo": 50,
+    "taxas_interrupcao": {
+        "Teclado": 0.15,
+        "Impressora": 0.25,
+        "Disco Rígido": 0.35
+    }
+}
