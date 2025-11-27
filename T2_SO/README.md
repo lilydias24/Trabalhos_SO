@@ -24,11 +24,12 @@ Demonstrar como funciona o gerenciamento de memória com paginação, incluindo:
 ```
 T2_SO/
 ├── paginacao/
-│   └── simulador_paginacao.py    # Lógica principal da simulação
+│   └── simulador_paginacao.py     # Lógica principal da simulação
+├── __main__.py                    # Arquivo principal que chama o simulador e tabela
 ├── cores.py                       # Configurações de cores para terminal
-├── __main__.py                    # Arquivo principal e interface
-├── README.md                      # Documentação do projeto
-└── 09_SO_ES_TP2_Simulação do Gerenciamento de Memória.pdf  # Enunciado
+├── input_utils.py                 # Input de solicitação de dados ao usuário
+├── README.md                      # Documentação do projet
+└── utils.py                       # crição da tabela de demonstração
 ```
 
 ## Descrição dos Módulos
@@ -36,8 +37,10 @@ T2_SO/
 | Módulo | Descrição | Responsabilidade |
 |--------|-----------|------------------|
 | **`simulador_paginacao.py`** | Classe principal `SimuladorGerenciadorMemoria` | Implementa o algoritmo FIFO, gerencia tabela de páginas e memória física |
+| **`__main__.py`** | Chamada dos métodos | Orquestra a simulação e chama a tabela da utils |
 | **`cores.py`** | Utilitários de formatação visual | Fornece cores e formatação para interface do terminal |
-| **`__main__.py`** | Interface principal | Orquestra a simulação e exibe resultados formatados |
+| **`input_utils.py`** | Input para o usuário | Solicita dados para a simulação e verifica se são válidos |
+| **`utils.py`** | Interface principal | criando a tabela de páginas |
 
 ## Como Executar
 
@@ -160,7 +163,7 @@ Com a configuração atual (3 molduras, 10 páginas virtuais), espera-se:
 
 ### Contribuições dos Integrantes
 - **Emilly Nascimento Dias**: Desenvolvimento da lógica principal do simulador e  Interface visual 
-- **Eric Santos de Moraes**: Implementação do algoritmo FIFO, testes e documentação 
+- **Eric Santos de Moraes**: Implementação do algoritmo FIFO, menu para solicitar os dados ao usuário, testes e documentação 
 - **Guilherme Rodrigues Vicente**: Desenvolvimento da lógica principal do simulador e documentação
 
 Este projeto foi desenvolvido para fins educacionais como parte do Trabalho Prático II da disciplina de Sistemas Operacionais (UNIPAMPA, 2025/2).
