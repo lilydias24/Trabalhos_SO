@@ -5,13 +5,23 @@ from simulador_es.dispositivo import Dispositivo, Teclado, Impressora, Disco
 from simulador_es.processo import Processo
 
 class Simulador:
-    def __init__(self, limite_tempo: int = 50):
+    # O construtor recebe o dicionário de configuração completo
+    def __init__(self, configuracao: Dict[str, Any]):
+        
+        limite_tempo = configuracao.get("limite_tempo_processo", 50)
+        taxas = configuracao.get("taxas_interrupcao", {})
+        
         # O relógio da simulação
         self.tempo_atual = 0
         # O processo principal que está rodando e será interrompido
         self.processo_principal = Processo(tempo_total_alvo=limite_tempo)
-        # Lista de todos os dispositivos para geração aleatória de interrupções
-        self.dispositivos: List[Dispositivo] = [Teclado(), Impressora(), Disco()]
+        
+        # Lista de todos os dispositivos. A taxa de cada um é passada na inicialização.
+        self.dispositivos: List[Dispositivo] = [
+            Teclado(taxas.get("Teclado", 0.15)),
+            Impressora(taxas.get("Impressora", 0.25)),
+            Disco(taxas.get("Disco Rígido", 0.35))
+        ]
         
         # Fila de interrupções pendentes. Armazena as interrupções que precisam de tratamento.
         self.fila_interrupcoes = deque()
@@ -21,7 +31,6 @@ class Simulador:
     def _gerar_interrupcoes(self):
         """
         Verifica se algum dispositivo gerou uma interrupção no ciclo atual.
-        (Requisito 1)
         """
         for disp in self.dispositivos:
             if disp.gerar_interrupcao():
@@ -45,30 +54,29 @@ class Simulador:
             key=lambda x: x['prioridade'], 
             reverse=True
         )
-        
+
         # A interrupção a ser tratada é a de maior prioridade.
         interrupcao_ativa = interrupcoes_ordenadas.pop(0)
-        
+
         # Atualiza a fila de pendentes (removendo a ativa).
         self.fila_interrupcoes = deque(interrupcoes_ordenadas)
-        
+
         dispositivo_nome = interrupcao_ativa['dispositivo']
         tempo_inicio_tratamento = self.tempo_atual
 
-        # ARMAZENAR CONTEXTO
+        # ARMAZENAR CONTEXTO (Salva o PC e muda o estado do Processo Principal para SUSPENSO)
         contexto_salvo = self.processo_principal.salvar_contexto()
         pc_antes = contexto_salvo['pc']
         estado_antes = contexto_salvo['estado_anterior']
-        
-        # EXECUTAR TRATAMENTO DA INTERRUPÇÃO
-        # Simula o tempo gasto no Service Routine. 
-        # O tempo é aleatório para mostrar que o SO está ocupado.
+
+        # EXECUTAR TRATAMENTO DA INTERRUPÇÃO (Service Routine)
+        # Simula o tempo gasto. 
         tempo_tratamento = random.randint(1, 3) 
-        self.tempo_atual += tempo_tratamento
-        
-        # RESTAURAR CONTEXTO
+        self.tempo_atual += tempo_tratamento # O tempo real avança
+
+        # RESTAURAR CONTEXTO (Restaura o PC e muda o estado do Processo Principal para EXECUTANDO)
         self.processo_principal.restaurar_contexto(contexto_salvo)
-        
+
         # REGISTRAR LOG
         self.log_eventos.append({
             'tempo_ocorrencia': interrupcao_ativa['tempo'],
@@ -85,25 +93,23 @@ class Simulador:
     def simular(self):
         """Loop principal da simulação."""
         print(f"--- INICIANDO SIMULAÇÃO (Alvo: {self.processo_principal.tempo_total_alvo} ciclos) ---")
-        
+
         while not self.processo_principal.executar_ciclo():
+
             # Geração de Interrupções
             self._gerar_interrupcoes()
-            
+
             # Tratamento de Interrupções
-            # O SO verifica e trata a interrupção mais prioritária ANTES de o processo principal avançar o tempo no próximo ciclo.
+            # O SO trata a interrupção mais prioritária (e avança o tempo durante o tratamento)
             self._tratar_interrupcao_mais_prioritaria()
-            
-            # Avançar o Tempo (Avança se não tivermos avançado durante o tratamento)
-            # O tempo já é avançado dentro do tratamento de interrupção, mas precisamos avançar 
-            # o ciclo principal caso não haja interrupções.
-            if self.fila_interrupcoes:
-                # Se ainda há interrupções, o tempo já foi avançado dentro do tratamento,
-                # então o loop continua e a fila é tratada no próximo ciclo (preempção).
-                pass
-            else:
-                self.tempo_atual += 1
-                
+
+            # Avançar o Tempo
+            # Se não houve interrupção tratada, o tempo só avança 1 ciclo normal.
+            # Se houve tratamento, o tempo já foi avançado dentro de _tratar_interrupcao_mais_prioritaria().
+            if not self.fila_interrupcoes:
+                 self.tempo_atual += 1
+
+
         # Simulação finalizada
         print(f"--- SIMULAÇÃO CONCLUÍDA em T={self.tempo_atual} ---")
         return self.log_eventos
