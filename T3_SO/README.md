@@ -29,9 +29,7 @@ T3_SO/
 │   ├── processo.py        # Representação do processo (PC, Estados, Contexto)
 │   └── simulador.py       # Kernel: Loop principal e despachante de interrupções
 ├── __main__.py            # Ponto de entrada (execução principal)
-├── configuracao.json      # Arquivo de configuração (Taxas e Tempos)
 ├── cores.py               # Códigos ANSI para coloração do terminal
-├── gerenciador_configuracao.py # Leitor do arquivo JSON
 ├── utils.py               # Funções de formatação de logs e tabelas
 ├── README.md              # Documentação do projeto
 └── .gitignore             # Arquivo de exclusão do Git
@@ -46,7 +44,6 @@ T3_SO/
 | **`processo.py`** | Representa o programa de usuário. Mantém o `tempo_executado` (que simula o Program Counter - PC) e os métodos `salvar_contexto` e `restaurar_contexto`. |
 | **`dispositivo.py`** | Define a classe base `Dispositivo` e suas especializações (`Teclado`, `Impressora`, `Disco`). Controla as prioridades e a probabilidade de gerar interrupção. |
 | **`utils.py`** | Responsável pela interface visual, gerando a tabela detalhada do Log de Eventos ao final da execução. |
-| **`configuracao.json`** | Permite alterar o tempo de simulação e a "agressividade" (taxa de geração) de cada dispositivo sem alterar o código. |
 
 ## Como Executar
 
@@ -56,7 +53,8 @@ T3_SO/
 
 ### Passos
 1. Navegue até o diretório raiz do projeto:
-   ```bash
+
+```bash
    cd T3_SO
 ````
 
@@ -68,20 +66,9 @@ T3_SO/
 
 3.  Ao final da execução, o relatório de logs será exibido e você poderá pressionar Enter para sair.
 
-## Configuração da Simulação (`configuracao.json`)
+## Configuração da Simulação
 
-Você pode personalizar o comportamento da simulação editando o arquivo `configuracao.json`:
-
-```json
-{
-    "limite_tempo_processo": 50,  // Duração total do processo principal (ciclos)
-    "taxas_interrupcao": {        // Probabilidade de gerar interrupção por ciclo (0.0 a 1.0)
-        "Teclado": 0.15,
-        "Impressora": 0.25,
-        "Disco Rígido": 0.35
-    }
-}
-```
+Você pode personalizar o comportamento da simulação através do menu quando o programa for executado
 
 ## Lógica Implementada
 
