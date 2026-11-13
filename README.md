@@ -9,7 +9,7 @@ sistema a cada passo com saída colorida.
 | --- | --- | --- |
 | [T1](T1_SO/) | Gerenciamento de processos | Escalonadores **FIFO** e **SJF preemptivo**, com métricas de tempo de espera |
 | [T2](T2_SO/) | Gerenciamento de memória | **Paginação** com substituição de páginas **FIFO**: tradução de endereço virtual para físico, *page hits* e *page faults* |
-| [T3](https://github.com/lilydias24/Trabalhos_SO/tree/eric_branch/T3_SO) | Entrada e saída | **Interrupções** de dispositivos tratadas por prioridade, com salvamento e restauração do contexto do processo |
+| [T3](T3_SO/) | Entrada e saída | **Interrupções** de dispositivos tratadas por prioridade, com salvamento e restauração do contexto do processo |
 
 ## Como rodar
 
@@ -23,10 +23,8 @@ python __main__.py
 
 - **T1:** revisão da lógica dos escalonadores FIFO e SJF, métricas de tempo de espera,
   menu principal, saída colorida no terminal e o README.
-- **T2:** README do trabalho e uma versão simplificada do simulador de paginação para
-  análise (branch `emy_branch`).
+- **T2:** README do trabalho e a versão simplificada do simulador de paginação, que é a
+  base da versão final.
 - **T3:** revisão do README.
 
 **Equipe:** Emilly Nascimento Dias, Eric Santos de Moraes e Guilherme Rodrigues Vicente.
-
-> O T3 está na branch `eric_branch`; a `main` reúne os trabalhos I e II.
