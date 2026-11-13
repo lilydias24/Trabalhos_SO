@@ -1,5 +1,5 @@
 import collections
-from T2_SO.cores import colorir, Cores
+from cores import colorir, Cores
 
 class Escalonador_fifo:
     def __init__(self, processos):
