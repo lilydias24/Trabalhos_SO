@@ -1,6 +1,7 @@
 from collections import deque
 from typing import List, Dict, Any, Optional
 
+# Representa uma entrada na Tabela de Páginas.
 class PageTableEntry:
     """Representa uma entrada na Tabela de Páginas."""
     def __init__(self):
@@ -29,6 +30,7 @@ class SimuladorGerenciadorMemoria:
         self.total_page_faults = 0
         self.historico_simulacao: List[Dict[str, Any]] = []
         self.tempo_atual = 0
+        
 
     def traduzir_endereco_virtual(self, endereco_virtual: int) -> int:
         """Calcula o número da página virtual a partir do endereço virtual."""
@@ -45,72 +47,53 @@ class SimuladorGerenciadorMemoria:
         
         num_pagina = self.traduzir_endereco_virtual(endereco_virtual)
         entrada_tabela = self.tabela_paginas[num_pagina]
-        page_fault = False
         
-        evento_simulacao = {
+        # Evento de simulação
+        evento = {
             'tempo': self.tempo_atual,
             'endereco_acessado': endereco_virtual,
             'pagina_alvo': num_pagina,
             'status': '',
             'moldura_encontrada': None,
-            'page_fault': False,
-            'pagina_removida': None
+            'page_fault': False
         }
 
-        # 1. VERIFICAÇÃO DO BIT DE PRESENÇA (Page Hit)
+        # Verifica se página está na memória - BIT DE PRESENÇA (Page Hit)
         if entrada_tabela.presente:
-            # Page Hit
-            evento_simulacao['status'] = 'HIT'
-            evento_simulacao['moldura_encontrada'] = entrada_tabela.moldura
-            
+            evento['status'] = 'HIT'
+            evento['moldura_encontrada'] = entrada_tabela.moldura
         else:
-            # 2. PAGE FAULT (Falta de Página)
+            # Page Fault - precisa carregar página
             self.total_page_faults += 1
-            page_fault = True
-            evento_simulacao['page_fault'] = True
-            evento_simulacao['status'] = 'FAULT'
+            evento['page_fault'] = True
+            evento['status'] = 'FAULT'
 
-            # 3. ENCONTRA UMA MOLDURA LIVRE/PARA SUBSTITUIÇÃO
+            # Encontra moldura livre ou aplica FIFO
             if None in self.memoria_fisica:
-                # Há espaço livre
                 moldura_para_usar = self.memoria_fisica.index(None)
-                evento_simulacao['status'] += ' (Livre)'
-                
+                evento['status'] += ' (Livre)'
             else:
-                # Memória cheia -> Aplicar FIFO
-                # Pega a página mais antiga (primeira a entrar)
-                pagina_remover = self.fila_fifo.popleft() 
-                
-                # Encontra a moldura que ela ocupa
+                # FIFO: remove página mais antiga
+                pagina_remover = self.fila_fifo.popleft()
                 moldura_para_usar = self.memoria_fisica.index(pagina_remover)
                 
-                # Limpa a entrada na Tabela de Páginas da página removida
+                # Limpa entrada da página removida
                 self.tabela_paginas[pagina_remover].presente = False
                 self.tabela_paginas[pagina_remover].moldura = None
-                
-                evento_simulacao['status'] += f' (FIFO Remove P{pagina_remover})'
-                evento_simulacao['pagina_removida'] = pagina_remover
+                evento['status'] += f' (FIFO Remove P{pagina_remover})'
 
-
-            # 4. CARREGAR NOVA PÁGINA (Atualizar Memória Física e Tabela de Páginas)
-            
-            # Atualiza Memória Física
+            # Carrega nova página
             self.memoria_fisica[moldura_para_usar] = num_pagina
-            
-            # Atualiza a Tabela de Páginas da nova página
             entrada_tabela.moldura = moldura_para_usar
             entrada_tabela.presente = True
-            
-            # Adiciona a nova página ao controle FIFO
             self.fila_fifo.append(num_pagina)
-            
-            evento_simulacao['moldura_encontrada'] = moldura_para_usar
+            evento['moldura_encontrada'] = moldura_para_usar
 
-        # 5. Registrar e Avançar o Tempo
-        self.historico_simulacao.append(evento_simulacao)
+        # Registra evento
+        self.historico_simulacao.append(evento)
         self.tempo_atual += 1
         
-        return page_fault
+        return evento['page_fault']
 
     def simular(self, lista_acessos: List[int]) -> tuple:
         """Executa a simulação completa com a lista de acessos."""
